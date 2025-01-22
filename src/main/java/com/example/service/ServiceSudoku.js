@@ -6,14 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const HARD_BUTTON = document.getElementById('hard-button');
     const SUDOKU_BOARD = document.getElementById('board-mode');
 
-    let sudokuBoard = [], resultSudokuBoard = [], indexHiddenCell = [], rowMark = [], colMark = [], matrixMark = [];
+    let sudokuBoard = [], resultSudokuBoard = [], rowMark = [], colMark = [], matrixMark = [];
     let rows, cols, hiddenCell, largeCellSize;
-    const CHARACTERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
-    const DIRECTIONS = [
-        [-1, -1], [-1, 0], [-1, 1],
-        [0, -1], [0, 1],
-        [1, -1], [1, 0], [1, 1]
-    ];
+    const CHARACTERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G"];
 
     function getDifficulty(difficulty) {
         if (difficulty === 'easy') {
@@ -34,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function initResultBoard() {
-        indexHiddenCell = Array(hiddenCell).fill(null).map(() => Array(2).fill(0));
         sudokuBoard = Array(rows).fill(null).map(() => Array(cols).fill(0));
         resultSudokuBoard = Array(rows).fill(null).map(() => Array(cols).fill(0));
         rowMark = Array(rows).fill(null).map(() => Array(CHARACTERS.length).fill(false));
@@ -83,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function initHiddenSudokuBoard() {
         sudokuBoard = resultSudokuBoard.map(row => [...row]);
         let added = new Set();
-        let hidden = hiddenCell, idx = 0;
+        let hidden = hiddenCell;
         while (hidden > 0) {
             let i = Math.floor(Math.random() * rows);
             let j = Math.floor(Math.random() * cols);
@@ -92,7 +86,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 added.add(index);
                 sudokuBoard[i][j] = 0;
                 hidden--;
-                indexHiddenCell[idx++] = [i, j];
             }
         }
     }
@@ -126,10 +119,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         cell.dataset.row = i.toString();
         cell.dataset.col = j.toString();
-        cell.classList.add('cell')
+        cell.classList.add('cell');
         if (sudokuBoard[i][j] !== 0) {
             cell.innerHTML = sudokuBoard[i][j];
+        } else {
+            cell.setAttribute('contenteditable', 'true');
         }
+
         //outer edge border
         if (i === 0) cell.classList.add('border_top');
         if (i === rows - 1) cell.classList.add('border_bottom');
@@ -147,46 +143,123 @@ document.addEventListener('DOMContentLoaded', function () {
         if (j % largeCellSize === 0 && j !== 0) cell.classList.add('border_left');
     }
 
-    function isVaLidIndex(i, j) {
-        return 0 <= i && i < rows && 0 <= j && j < cols;
+    function correctWithTheGivenAnswer() {
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                let cell = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+                let cellData = cell.textContent.trim();
+                if (cellData === "") return false;
+            }
+        }
+        return checkAnswer();
+    }
+
+    function checkAnswer() {
+        let rowM = Array(rows).fill(null).map(() => Array(CHARACTERS.length).fill(false));
+        let colM = Array(cols).fill(null).map(() => Array(CHARACTERS.length).fill(false));
+        let matrixM = Array.from({ length: Math.sqrt(rows) }, () =>
+            Array.from({ length: Math.sqrt(cols) }, () => Array(CHARACTERS.length).fill(false))
+        );
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                let cell = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+                let cellData = cell.textContent.trim();
+                if (cellData !== "") {
+                    let charIndex = CHARACTERS.indexOf(cellData);
+                    if (rowM[i][charIndex] || colM[j][charIndex] || matrixM[Math.floor(i / Math.sqrt(rows))][Math.floor(j / Math.sqrt(cols))][charIndex]) {
+                        return false;
+                    }
+                    rowM[i][charIndex] = true;
+                    colM[j][charIndex] = true;
+                    matrixM[Math.floor(i / Math.sqrt(rows))][Math.floor(j / Math.sqrt(cols))][charIndex] = true;
+                }
+            }
+        }
+        return true;
+    }
+
+    document.addEventListener('input', function (ev) {
+        if (ev.target.classList.contains('cell')) {
+            const row = parseInt(ev.target.dataset.row, 10);
+            const col = parseInt(ev.target.dataset.col, 10);
+            const value = ev.target.textContent.trim();
+            if (checkEnteredCharacter(value)) {
+                sudokuBoard[row][col] = value;
+                if (correctWithTheGivenAnswer()) {
+                    alert("You win.");
+                }
+            } else {
+                sudokuBoard[row][col] = 0;
+                ev.target.textContent = '';
+            }
+        }
+    });
+
+    document.addEventListener('keydown', function (ev) {
+        if (ev.target.classList.contains('cell')) {
+            const value = ev.key;
+            if (!checkEnteredCharacter(value) && (ev.key !== 'Backspace')) {
+                ev.target.style.transform = 'translateX(2px)';
+                setTimeout(() => {
+                    ev.target.style.transform = 'translateX(-2px)';
+                }, 100);
+                setTimeout(() => {
+                    ev.target.style.transform = 'translateX(0)';
+                }, 200);
+                ev.target.style.backgroundColor = '#ec778e';
+                setTimeout(() => {
+                    ev.target.style.transform = 'translateX(0)';
+                    ev.target.style.backgroundColor = '';
+                }, 200);
+            }
+        }
+    });
+
+    function checkEnteredCharacter(input) {
+        if (rows === 4) {
+            return (/^\d$/.test(input) && input > 0 && input < 5);
+        } else if (rows === 9) {
+            return (/^\d$/.test(input) && input > 0 && input < 10);
+        }
+        return /^[A-G]$/.test(input) || (/^\d$/.test(input) && input > 0 && input < 10);
     }
 
     const path = window.location.pathname;
-    if (path.includes('easyMode.html')) {
+    if (path.includes('EasyMode.html')) {
         getDifficulty('easy');
-    } else if (path.includes('mediumMode.html')) {
+    } else if (path.includes('MediumMode.html')) {
         getDifficulty('medium');
-    } else if (path.includes('hardMode.html')) {
+    } else if (path.includes('HardMode.html')) {
         getDifficulty('hard');
     }
 
     if (EASY_BUTTON) {
         EASY_BUTTON.addEventListener('click', function () {
-            window.location.href = '../index/easyMode.html';
+            window.location.href = '../index/EasyMode.html';
         });
     }
 
     if (MEDIUM_BUTTON) {
         MEDIUM_BUTTON.addEventListener('click', function () {
-            window.location.href = '../index/mediumMode.html';
+            window.location.href = '../index/MediumMode.html';
         });
     }
 
     if (HARD_BUTTON) {
         HARD_BUTTON.addEventListener('click', function () {
-            window.location.href = '../index/hardMode.html';
+            window.location.href = '../index/HardMode.html';
         });
     }
 
     if (RULE_BUTTON) {
         RULE_BUTTON.addEventListener('click', function () {
-            window.location.href = '../index/rulesOfTheGame.html';
+            window.location.href = '../index/RulesOfTheGame.html';
         });
     }
 
     if (BACK_HOME_BUTTON) {
         BACK_HOME_BUTTON.addEventListener('click', function () {
-            window.location.href = '../index/home.html';
+            window.location.href = '../index/Home.html';
         });
     }
 });

@@ -112,3 +112,10 @@ button:hover {
     border-left: 3px solid #000000;
 }
 
+.cell:focus {
+    background-color: #e4dfd1;
+    outline: 1px solid #bbb;
+    caret-color: transparent;
+    transform: scale(1.02);
+}
+

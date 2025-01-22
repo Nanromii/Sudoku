@@ -1,0 +1,60 @@
+body {
+    font-family: "MV Boli", Arial;
+    display: flex;
+    flex-direction: column;
+    background-image: url("https://www.doctorshealthpress.com/wp-content/uploads/2015/10/Marji_241015.jpg");
+    background-size: cover;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    font-family: "MV Boli", Arial;
+    font-size: 100px;
+    margin-bottom: 5px;
+    margin-top: 0;
+}
+
+p {
+    margin-bottom: 0;
+    font-size: 20px;
+}
+
+#game {
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f6f0e1;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+button {
+    padding: 5px 50px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #517c62;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+button:hover {
+    background-color: #8fbca1;
+    transform: scale(1.05);
+}
+
+#medium-button {
+    padding: 5px 40px;
+}
+
+#rulesOfTheGame {
+    padding: 5px 47px;
+    font-size: 16px;
+}
+

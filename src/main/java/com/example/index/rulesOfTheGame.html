@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rules of the Sudoku</title>
+    <meta name="viewport" content="with=device-width, initial-scale=1.0">
+    <link href="../style/styleRulesOfTheGame.css" rel="stylesheet">
+</head>
+<body>
+    <div id="rules-board">
+        <ul>
+            <li>Fill in the numbers or letter in the board (Depends on the difficulty you choose):</li>
+            <ul>
+                <li>For <b>EASY</b>: Fill the numbers from 1 to 4.</li>
+                <li>For <b>MEDIUM</b>: Fill the numbers from 1 to 9.</li>
+                <li>For <b>HARD</b>: Fill the numbers from 1 to 9 and letter from A to G.</li>
+            </ul>
+            <li>In each row and column of the board, each number and letter can appear only once.</li>
+            <li>Within each 'large cell' (e.g., 2x2 for <b>EASY</b>, 3x3 for <b>MEDIUM</b>, 4x4 for <b>HARD</b>), each number and letter can appear only once.</li>
+            <li>You win if you complete the board while satisfying all the above conditions.</li>
+        </ul>
+        <button id="back-home-button">Back Home</button>
+    </div>
+    <script src="../service/serviceSudoku.js" defer></script>
+</body>
+</html>

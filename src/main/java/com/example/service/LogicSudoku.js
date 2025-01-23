@@ -1,21 +1,24 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const RULE_BUTTON = document.getElementById('rulesOfTheGame');
-    const BACK_HOME_BUTTON = document.getElementById('back-home-button');
-    const EASY_BUTTON = document.getElementById('easy-button');
-    const MEDIUM_BUTTON = document.getElementById('medium-button');
-    const HARD_BUTTON = document.getElementById('hard-button');
     const SUDOKU_BOARD = document.getElementById('board-mode');
+    const NUMBERS_HINTS = document.getElementById('number');
+    const HINT_BUTTON = document.getElementById('hints');
 
     let sudokuBoard = [], resultSudokuBoard = [], rowMark = [], colMark = [], matrixMark = [];
-    let rows, cols, hiddenCell, largeCellSize;
+    let rows, cols, hiddenCell, largeCellSize, number_hints = 0;
     const CHARACTERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G"];
 
     function getDifficulty(difficulty) {
         if (difficulty === 'easy') {
+            number_hints = 1;
+            NUMBERS_HINTS.textContent = number_hints;
             rows = cols = 4;
         } else if (difficulty === 'medium') {
+            number_hints = 3;
+            NUMBERS_HINTS.textContent = number_hints;
             rows = cols = 9;
         } else if (difficulty === 'hard') {
+            number_hints = 7;
+            NUMBERS_HINTS.textContent = number_hints;
             rows = cols = 16;
         }
         largeCellSize = Math.sqrt(rows);
@@ -224,6 +227,27 @@ document.addEventListener('DOMContentLoaded', function () {
         return /^[A-G]$/.test(input) || (/^\d$/.test(input) && input > 0 && input < 10);
     }
 
+    HINT_BUTTON.addEventListener('click', function () {
+        updatedHints();
+    });
+
+    function updatedHints() {
+        if (number_hints === 0) {
+            return;
+        }
+        let i = Math.floor(Math.random() * rows);
+        let j = Math.floor(Math.random() * cols);
+        let cell = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+        while (cell.textContent.trim() !== "") {
+            i = Math.floor(Math.random() * rows);
+            j = Math.floor(Math.random() * cols);
+            cell = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+        }
+        cell.innerHTML = resultSudokuBoard[i][j];
+        NUMBERS_HINTS.textContent = (number_hints - 1).toString();
+        --number_hints;
+    }
+
     const path = window.location.pathname;
     if (path.includes('EasyMode.html')) {
         getDifficulty('easy');
@@ -231,35 +255,5 @@ document.addEventListener('DOMContentLoaded', function () {
         getDifficulty('medium');
     } else if (path.includes('HardMode.html')) {
         getDifficulty('hard');
-    }
-
-    if (EASY_BUTTON) {
-        EASY_BUTTON.addEventListener('click', function () {
-            window.location.href = '../index/EasyMode.html';
-        });
-    }
-
-    if (MEDIUM_BUTTON) {
-        MEDIUM_BUTTON.addEventListener('click', function () {
-            window.location.href = '../index/MediumMode.html';
-        });
-    }
-
-    if (HARD_BUTTON) {
-        HARD_BUTTON.addEventListener('click', function () {
-            window.location.href = '../index/HardMode.html';
-        });
-    }
-
-    if (RULE_BUTTON) {
-        RULE_BUTTON.addEventListener('click', function () {
-            window.location.href = '../index/RulesOfTheGame.html';
-        });
-    }
-
-    if (BACK_HOME_BUTTON) {
-        BACK_HOME_BUTTON.addEventListener('click', function () {
-            window.location.href = '../index/Home.html';
-        });
     }
 });
